@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>assignment 3 rest api</title>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script>
+
+$(document).ready(function() {
+    $('#submit').click(function() {
+      processQuery($('#word').val());
+    });
+});
+
+function processQuery(req){
+
+	request = $.ajax({
+        url: req,
+        type: "get",
+		success: function(res) {
+			   $("#output").html();
+			    $("#output").html(res);
+            }
+    });
+	
+
+}
+</script>
+<body>
+<form onsubmit="return false;">
+<input type="text" id="word"/>
+<input type="submit" id="submit" value="send"/>
+</form>
+<p id="output"><ul>
+<li>type "/tweets" to view all tweets in archive.</li>
+<li>type "/users" to vire all users in the archive</li>
+<li>type "/links" to view all links in archive.</li>
+<li>type "/tweets/id=SOMEID" to view all tweets with SOMEID in archive.</li>
+<li>type "/users/screenname=SOMEUSERNAME" to view all users with SOMEUSERNAME in archive.</li>
+<li>type "/followers/id=SOMEUSERID" to view the total followers of the user with SOMEUSERID in archive.</li>
+</ul></p>
+</body>
+</html>

@@ -1,0 +1,174 @@
+pp{word-wrap:break-word;} 
+
+
+body{
+	background-image:"websiteBackground.png";
+
+}
+
+#Header{
+	background: rgb(20,160,20);
+	border-radius: 20px;
+	width: 100%;
+	color:rgb(255,255,255);
+    border-style: solid;
+    border-width: 5px;	
+	border-color:black;
+	clear:both;
+	font-size:20px;
+}
+#Navigation{
+	float:left;
+	width:20%;
+	background-color:rgb(200,200,200);
+	height:800px;
+}
+#Body{
+	float:left;
+	width:60%;
+	background-color:rgb(255,255,255);
+	height:800px;
+}
+#SidePanel{
+	width:20%;
+	float:right;
+	height:800px;
+	background-color:rgb(200,200,200);
+}
+
+#Footer{
+	clear:both;
+	background: rgb(0,0,0);
+	border-radius: 20px;
+	width:100%;
+	color:rgb(255,255,255);
+}
+
+div.block{
+}
+
+div.block a{
+		color:blue;
+		text-decoration:none;
+}
+
+div.projects{
+}
+div.gray{
+	padding:3px;
+	text-align:left;
+	background-color:rgb(220,220,220);
+	
+}
+div.white{
+	padding:3px;
+	text-align:left;
+	background-color:rgb(245,245,245);
+}
+
+div.links
+{
+width:100%;
+height:10%;
+text-align:right;
+background-color:rgb(208,208,208);
+-moz-box-shadow: 10px 10px 5px #888888; /* Firefox 3.6 and earlier */
+box-shadow: 10px 10px 5px #888888;
+/*border-radius:25px;
+-moz-border-radius:25px;  Firefox 3.6 and earlier */
+
+
+}
+
+div.animContent
+{
+width:70%;
+/*height:100px;*/
+text-align:left;
+
+transition:width 2s;
+-moz-transition:width 2s; /* Firefox 4 */
+-webkit-transition:width 2s; /* Safari and Chrome */
+-o-transition:width 2s; /* Opera */
+
+
+background-color:rgb(208,208,208);
+/* opacity:0.8;
+ filter:alpha(opacity=80);  For IE8 and earlier */
+-moz-box-shadow: 10px 10px 5px #888888; /* Firefox 3.6 and earlier */
+box-shadow: 10px 10px 5px #888888;
+/*border-radius:25px;
+-moz-border-radius:25px;  Firefox 3.6 and earlier */
+}
+
+div.animContent:hover{
+width:100%;
+}
+
+div.anim
+{
+width:70%;
+/*height:100px;*/
+text-align:left;
+
+transition:width 2s;
+-moz-transition:width 2s; /* Firefox 4 */
+-webkit-transition:width 2s; /* Safari and Chrome */
+-o-transition:width 2s; /* Opera */
+
+
+background-color:rgb(208,208,208);
+opacity:0.8;
+filter:alpha(opacity=80);  For IE8 and earlier 
+-moz-box-shadow: 10px 10px 5px #888888; /* Firefox 3.6 and earlier */
+/*box-shadow: 10px 10px 5px #888888;*/
+/*border-radius:25px;
+-moz-border-radius:25px;  Firefox 3.6 and earlier */
+}
+
+div.anim:hover{
+width:100%;
+}
+
+
+
+div.p
+ {
+  margin:30px 40px;
+  font-weight:bold;
+  color:#000000;
+ }
+
+
+aa{
+	z-index:10;
+	}
+aa:hover{
+	position:relative;
+	z-index:100;
+	}			
+aa span{
+	display:none;
+	}
+aa:hover span{
+	display:block;
+	position:absolute;
+	float:left;
+	white-space:nowrap;
+	top: 2.2em;
+	left:.-2em;
+	background-color:rgb(150,150,100);
+	border:1px solid #444;
+	color:#444;
+	padding:1px 5px;
+	z-index:10;			
+}
+
+
+
+
+
+
+
+
+	

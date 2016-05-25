@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<body>
+<style>
+body {
+    background-color: linen;
+}
+
+h1 {
+    color: maroon;
+    margin-left: 40px;
+} 
+.startPagePanel{
+	background-color: rgb(200,200,200);
+	border:1px solid black;
+	width:30vh;
+	height:30vh;
+	margin:0px auto;
+}
+</style>
+
+<script>
+/*var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
+ctx.fillStyle = "#FF0000";
+ctx.fillRect(0,0,400,650);
+ctx.fillStyle = "#FFFFFF";
+ctx.fillText("Level",50,50);
+ctx.fillText("High Score",50,250);
+ctx.fillRect(50,400,250,100);
+window.addEventListener("mousedown", doMouseDown, false);
+function doMouseDown(event) {
+  x = event.pageX - canvas.offsetLeft;
+  y = event.pageY - canvas.offsetTop;
+  if (x>=50 && x<=300 && y>=400 && y<=500) {
+     alert("BUTTON PRESSED");
+  }
+}*/
+// Retrieve
+if(localStorage.highScore!=null){
+	// Store
+	document.getElementById("highScore").innerHTML = localStorage.highScore;
+}
+</script>
+<div class="startPagePanel">
+<form action="gamePage.html">
+Level
+<input type="radio" checked="checked" name="level" value="1">1
+<input type="radio" name="level" value="2">2
+<br><br>
+High Score:<p id="highScore">0<p><br><br>
+<input type="submit" name="start" value="Start">
+</form>
+</div>
+</body>
+</html>

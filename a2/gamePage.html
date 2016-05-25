@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<canvas onclick="processClick(event)" id="myCanvas" width="400" height="650" style="border:1px solid #c3c3c3;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+
+<script>
+var gameOver = false;
+var pause = false;
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
+var bugs =[];
+var foods = [];
+var secondsLeft = 60;
+var level = getLevelFromUrl();
+var highScore = 0;
+var score = 0;
+var bugsKilled = 0;
+
+function getLevelFromUrl(){
+var parts = window.location.href.split("?");
+if(parts[1] === undefined){
+level = 1;
+return level;
+}
+var smallerPart = parts[1].split("&");
+var tokens = smallerPart[0].split("=");
+var level = tokens[1];
+return level;
+}
+
+
+function processClick(event){
+	var x = event.clientX;
+	var y = event.clientY;
+	//had to add a bit of spacing to mouseposition check. must add ten to make it work for some reason
+	var spacing = 10;
+	//this checks if bug has been clicked in a 30 px radius and removes the bug from the bugs array if it has been killed.
+	for(i=0;i<bugs.length;i++){
+		//if the bug is present within a 30 px radius then delete it.
+		if(Math.sqrt((bugs[i].x-x)*(bugs[i].x-x)+(bugs[i].y-y)*(bugs[i].y-y))<30+20){
+		    
+			if(!bugs[i].dead){
+			console.log(i);
+			bugs[i].dead= true;
+			score += bugs[i].killScore;
+			bugsKilled++;
+			setTimeout(function(i){ 
+			bugs.splice(i,1);
+			//console.log(time);
+			},2000);
+			//bugs.splice(i,1);
+				
+			}
+			
+		}
+		
+		
+	}
+}
+
+function drawInformationBar(context){
+    context.fillStyle = "#F00000";
+	context.fillRect(0,0,400,50);
+	context.fillStyle = "#FFFFFF";
+	context.fillText(secondsLeft+" sec",50,50);
+	context.fillText("Score: "+score,280,50);
+	context.fillStyle = "rgb(200,50,50)";
+	context.fillRect(150,0,100,50);
+	ctx.fillStyle = "rgb(50,50,50)";
+	ctx.font = "40px Arial";
+	if(pause){
+		context.fillText("(|>)",170,35);
+	}else{
+		context.fillText("(||)",180,35);
+	}
+	ctx.font = "20px Arial";
+}
+
+window.addEventListener("mousedown", doMouseDown, false);
+
+function doMouseDown(event) {
+  x = event.pageX - canvas.offsetLeft;
+  y = event.pageY - canvas.offsetTop;
+  if (x>=150 && x<=250 && y>=0 && y<=50) {
+     pause=!pause;
+  }
+}
+
+
+
+
+function Food(x,y){
+	this.x = x;
+	this.y = y;
+	this.width = 20;
+	this.height = 20;
+
+
+// Add methods like this.  All Person objects will be able to invoke this
+this.draw = function(ctx){
+	ctx.save();
+	//ctx.scale(0.75, 1);
+	ctx.beginPath();
+	ctx.arc(x, y, 10, 0, Math.PI*2, false);
+    ctx.fillStyle = "#00FF00";
+	ctx.fill();
+	ctx.stroke();
+	ctx.closePath();
+	ctx.restore();
+	//ctx.fillRect(this.x,this.y,this.width,this.height);
+	return null;
+};
+
+// Add methods like this.  All Person objects will be able to invoke this
+this.update = function(){
+   return null;
+};
+}
+
+function Bug(x,y,name,speedLevel1,speedLevel2,killScore,color){
+	this.x = x;
+	this.y = y;
+	this.width = 40;
+	this.height = 10;
+	this.speed = 1;
+    this.closestFood = null;
+	this.killScore = killScore;
+	this.name = name;
+	this.speedLevel1 = speedLevel1;
+	this.speedLevel2 = speedLevel2;
+	this.color = color;
+	this.angle = 0;
+	this.angleRadians = 0;
+	this.angleDegrees = 0;
+	this.dead = false;
+	this.time = 0;
+	
+// draw method for bug
+this.draw = function(ctx){
+
+	ctx.save();
+	ctx.translate(this.x,this.y);
+	ctx.translate(this.width/2,this.height/2);
+	ctx.rotate(this.angleRadians);//this.angleDegrees
+    ctx.beginPath();
+	ctx.fillStyle = this.color;
+	ctx.arc(5,5,5,0,2*Math.PI);
+	ctx.fill();
+	ctx.closePath();
+	ctx.beginPath();
+	ctx.fillStyle = this.color;
+	ctx.arc(15,5,5,0,2*Math.PI);
+	ctx.fill();
+	ctx.closePath();
+	ctx.beginPath();
+	ctx.fillStyle = this.color;
+	ctx.arc(25,5,5,0,2*Math.PI);
+	ctx.fill();
+	ctx.closePath();
+	
+	
+ctx.beginPath(); 
+ctx.lineWidth="1";
+ctx.strokeStyle="green"; // Green path
+ctx.moveTo(30,3);
+ctx.lineTo(40,2);
+ctx.stroke(); // Draw it
+ctx.beginPath(); 
+ctx.lineWidth="1";
+ctx.strokeStyle="green"; // Green path
+ctx.moveTo(30,7);
+ctx.lineTo(40,8);
+ctx.stroke(); // Draw it
+ctx.restore();
+	
+	return null;
+};
+
+var closestFoodIndex=-1;
+// Add methods like this.  All Person objects will be able to invoke this
+this.update = function(){
+    
+	if(this.dead){
+		return;
+	}
+	
+var smallestLength = 800;
+
+
+if(this.closestFood==null){
+
+		for(i=0;i<foods.length;i++){
+		//console.log("length :"+Math.sqrt(((foods[i].x-this.x)*(foods[i].x-this.x))+((foods[i].y-this.y)*(foods[i].y-this.y))));
+		if(Math.sqrt((foods[i].x-this.x)*(foods[i].x-this.x)+(foods[i].y-this.y)*(foods[i].y-this.y))<smallestLength){
+			smallestLength = Math.sqrt((foods[i].x-this.x)*(foods[i].x-this.x)+(foods[i].y-this.y)*(foods[i].y-this.y));
+			this.closestFood = foods[i];
+			
+			closestFoodIndex = i;
+			//console.log("closestFoodIndex1: "+closestFoodIndex);
+			//console.log("smallestLength: "+smallestLength);
+			//console.log("closestFood: "+this.closestFood);
+			
+		}
+	}
+}
+
+if(this.closestFood==null){
+	return;
+}
+
+
+this.angleRadians = Math.atan2(this.closestFood.y-this.y,this.closestFood.x-this.x);
+this.angleDegrees = this.angleRadians * 180 / Math.PI;
+//console.log(this.angleRadians+"angleRadians");
+//console.log(this.angleDegrees+"angleDegrees");
+//console.log("closestFoodIndex2: "+ closestFoodIndex);
+//if closestFood isnt in foods array
+/*
+if(!containsObject(this.closestFood,foods)){
+	closestFood=null;
+	return null;
+*/
+if(this.x<this.closestFood.x){
+	if(level==1){
+		this.x+=this.speedLevel1;
+	}
+	if(level==2){
+		this.x+=this.speedLevel2;
+	}
+}else{
+	if(level==1){
+		this.x-=this.speedLevel1;
+	}
+	if(level==2){
+		this.x-=this.speedLevel2;
+	}
+}
+if(this.y<this.closestFood.y){
+	if(level==1){
+		this.y+=this.speedLevel1;
+	}
+	if(level==2){
+		this.y+=this.speedLevel2;
+	}
+}else{
+	if(level==1){
+		this.y-=this.speedLevel1;
+	}
+	if(level==2){
+		this.y-=this.speedLevel2;
+	}
+}
+
+if(Math.sqrt((this.x-this.closestFood.x)*(this.x-this.closestFood.x)+(this.y-this.closestFood.y)*(this.y-this.closestFood.y))<30){
+
+	//console.log("occured"+closestFoodIndex);
+	foods.splice(closestFoodIndex,1);
+	//for every bug in array bugs set closestFood = null;
+	for(i=0;i<bugs.length;i++){
+		bugs[i].closestFood = null;
+	}
+}
+
+   return null;
+};
+}
+function containsObject(obj,list){
+for(i=0;i<list.length;i++){
+	if(list[i]===obj){
+		return true;
+	}
+}
+return false;
+}
+
+function gameFinish(){
+	highScore = score;	
+	
+// Retrieve
+if(localStorage.highScore!=null){
+	// Store
+	if(localStorage.highScore<highScore){
+		localStorage.highScore = highScore;
+	}
+
+}
+	alert("Game Over! your score was "+highScore);
+	var ret = confirm("Would you like to restart the game or no(exit the game)");
+			if (ret == true) {
+				alert("lets play again!");
+				window.location = "index.html";
+			} else{
+				//window.close();
+			}
+	//window.location = "index.html";
+
+}
+
+function init(){
+var curTime = 0;
+var curTime2 = 0;
+for(i=0;i<5;i++){
+    //make sure that food does not spawn within the top 20% of the table.
+	foods.push(new Food(Math.random()*380 + 10,Math.random()*480+120+50));
+	
+	//console.log("x:"+foods[i].x+"y:"+foods[i].y);
+}
+bugs = [];
+}
+//game loop
+setInterval(gameLoop, 33); // 33 milliseconds = ~ 30 frames per sec
+var bugSpawnTime = Math.random()*3;
+var curTime = 0;
+var curTime2 = 0;
+init();
+function gameLoop() {
+
+	if(level==1){
+	
+		if(secondsLeft<=0){ 
+		
+		level=2;
+		secondsLeft = 60;
+		init();
+		
+		
+		
+		}
+		if(foods.length==0){
+			if(!gameOver){
+				gameOver = true;
+				gameFinish();
+			}
+			return;
+			//window.location = "index.html";
+		}
+	}
+	
+		
+	if(level==2 && secondsLeft<=0 || level==2 && foods.length==0){
+		level=3;
+		if(highScore<score){
+			highScore = score;
+		}
+		var r = confirm("Your highscore was "+highScore+". Do you want to play again?");
+			if (r == true) {
+				alert("lets play again");
+				window.location = "index.html";
+			} else{
+				window.close();
+			}
+	}
+	
+	if(level==3){
+		return;
+	}
+
+
+if(pause){
+		drawInformationBar(ctx);
+		//ctx.save();
+		ctx.fillStyle = "rgba(100,100,100,0.05)";
+		//ctx.globalAlpha = 0.05;
+		ctx.fillRect(0,50,400,650);
+		//ctx.restore();
+		ctx.fillStyle = "#FFFFFF";
+		ctx.fillText("bugs killed: "+bugsKilled,250,250);
+		return;
+	}
+
+    //every 1-3 sec make a bug
+	curTime+=1/33;
+	
+	curTime2+=1/33;
+	if(curTime2>=1){
+		secondsLeft--;
+		curTime2=0;
+	}
+	//console.log("curTime:"+curTime);
+	//console.log("bugSpawnTime:"+bugSpawnTime);
+	if(curTime >= bugSpawnTime){
+		//console.log("spawned");
+		
+		//pick which bug gets spawned
+	    //let 0.0>=x>0.3 be chance of spawning a black bug
+		//let 0.3>=x>0.6 be chance of spawning a red bug
+		//let 0.6>=x>=1.0 be chance of spawning a orange bug.
+		var spawnBugProbabilityCalculation = Math.random();
+		if(spawnBugProbabilityCalculation>=0 && spawnBugProbabilityCalculation<0.3){
+			bugs.push(new Bug(Math.random()*380+10,-20,"black",5,6.66,5,"rgb(0,0,0)"));
+		}
+		if(spawnBugProbabilityCalculation>=0.3 && spawnBugProbabilityCalculation<0.6){
+			bugs.push(new Bug(Math.random()*380+10,-20,"red",2.5,3.33,3,"rgb(255,0,0)"));
+		}
+		if(spawnBugProbabilityCalculation>=0.6 && spawnBugProbabilityCalculation<=1.0){
+			bugs.push(new Bug(Math.random()*380+10,-20,"orange",2,2.66,1,"rgb(255,102,0)"));
+		}
+		
+		
+		curTime = 0;
+		bugSpawnTime = Math.random()*3;
+	}
+	
+    
+	ctx.fillStyle = "rgb(150,150,150)";
+	ctx.fillRect(0,0,400,650);
+    
+	for(i=0;i<foods.length;i++){
+		//f.update();
+		foods[i].draw(ctx);
+		foods[i].update();
+		//console.log("x:"+foods[i].x+"y:"+foods[i].y);
+		
+	}
+	//console.log("bugs length:"+bugs.length);
+	for(i=0;i<bugs.length;i++){
+	//console.log("bugs["+i+"]: "+bugs[i]);
+	//console.log("2i: "+i);
+		bugs[i].draw(ctx);
+		//console.log("bug["+i+"]:"+bugs[i]);
+		bugs[i].update();
+	}
+	drawInformationBar(ctx);
+}
+
+</script>
+
+</body>
+</html>
